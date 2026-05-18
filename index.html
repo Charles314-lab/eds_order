@@ -170,6 +170,14 @@
       width:54px;text-align:center;padding:6px;border:1.5px solid var(--sda-grey-light);
       border-radius:8px;font-weight:700;font-size:1rem;
     }
+    .split-help{font-size:.8rem;color:var(--sda-grey);margin:-4px 0 10px;font-style:italic}
+    .split-recap{
+      margin-top:10px;padding:8px 12px;background:#fff;border-radius:8px;
+      font-size:.88rem;color:var(--sda-denim-dark);text-align:center;
+      border:1px solid var(--sda-grey-light);
+    }
+    .split-recap.match{background:#e8f5e9;border-color:#a5d6a7;color:#1b5e20}
+    .split-recap.mismatch{background:#fdecea;border-color:#f5c2c0;color:#b71c1c}
     .split-error{color:var(--sda-error);font-size:.82rem;margin-top:6px;display:none}
     .split-error.show{display:block}
 
@@ -301,7 +309,8 @@
           <div class="hint">Combien de guides souhaitez-vous commander au total ?</div>
         </div>
 
-        <div class="field">
+        <!-- Cas : 1 seul guide → choix simple langue + type -->
+        <div class="field" id="langueField">
           <label>Langue <span style="color:#C62828">*</span></label>
           <div class="radio-group">
             <label class="radio-card">
@@ -321,7 +330,6 @@
           </div>
         </div>
 
-        <!-- Cas : 1 seul guide → choix simple du type -->
         <div class="field" id="singleTypeField">
           <label>Type de guide <span style="color:#C62828">*</span></label>
           <div class="radio-group">
@@ -342,38 +350,62 @@
           </div>
         </div>
 
-        <!-- Cas : plus d'1 guide → répartition -->
+        <!-- Cas : plus d'1 guide → répartition par type ET par langue (matrice 4 cases) -->
         <div class="qty-split" id="splitField" style="display:none">
-          <div class="split-title">⚖️ Répartition de vos guides</div>
+          <div class="split-title">⚖️ Répartition par type et par langue</div>
+          <div class="split-help">Indiquez combien de guides vous voulez pour chaque combinaison.</div>
 
           <div class="qty-row">
-            <label>📖 Guide Adulte <span class="price-tag">(2 000 FCFA / unité)</span></label>
+            <label>📖 Adulte <strong>Français</strong> <span class="price-tag">(2 000 FCFA / u.)</span></label>
             <div class="qty-stepper">
-              <button type="button" data-action="dec" data-target="nbAdulte" aria-label="Diminuer">−</button>
-              <input type="number" id="nbAdulte" value="1" min="0" max="50" />
-              <button type="button" data-action="inc" data-target="nbAdulte" aria-label="Augmenter">+</button>
+              <button type="button" data-action="dec" data-target="nbAdulteFr" aria-label="Diminuer">−</button>
+              <input type="number" id="nbAdulteFr" value="1" min="0" max="50" />
+              <button type="button" data-action="inc" data-target="nbAdulteFr" aria-label="Augmenter">+</button>
             </div>
           </div>
 
           <div class="qty-row">
-            <label>🎓 Guide Moniteur <span class="price-tag">(4 000 FCFA / unité)</span></label>
+            <label>📖 Adulte <strong>Anglais</strong> <span class="price-tag">(2 000 FCFA / u.)</span></label>
             <div class="qty-stepper">
-              <button type="button" data-action="dec" data-target="nbMoniteur" aria-label="Diminuer">−</button>
-              <input type="number" id="nbMoniteur" value="0" min="0" max="50" />
-              <button type="button" data-action="inc" data-target="nbMoniteur" aria-label="Augmenter">+</button>
+              <button type="button" data-action="dec" data-target="nbAdulteEn" aria-label="Diminuer">−</button>
+              <input type="number" id="nbAdulteEn" value="0" min="0" max="50" />
+              <button type="button" data-action="inc" data-target="nbAdulteEn" aria-label="Augmenter">+</button>
             </div>
           </div>
 
+          <div class="qty-row">
+            <label>🎓 Moniteur <strong>Français</strong> <span class="price-tag">(4 000 FCFA / u.)</span></label>
+            <div class="qty-stepper">
+              <button type="button" data-action="dec" data-target="nbMoniteurFr" aria-label="Diminuer">−</button>
+              <input type="number" id="nbMoniteurFr" value="0" min="0" max="50" />
+              <button type="button" data-action="inc" data-target="nbMoniteurFr" aria-label="Augmenter">+</button>
+            </div>
+          </div>
+
+          <div class="qty-row">
+            <label>🎓 Moniteur <strong>Anglais</strong> <span class="price-tag">(4 000 FCFA / u.)</span></label>
+            <div class="qty-stepper">
+              <button type="button" data-action="dec" data-target="nbMoniteurEn" aria-label="Diminuer">−</button>
+              <input type="number" id="nbMoniteurEn" value="0" min="0" max="50" />
+              <button type="button" data-action="inc" data-target="nbMoniteurEn" aria-label="Augmenter">+</button>
+            </div>
+          </div>
+
+          <div class="split-recap" id="splitRecap">
+            Total réparti : <strong id="splitSum">1</strong> / <strong id="splitTarget">1</strong>
+          </div>
           <div class="split-error" id="splitError">
-            ⚠️ La somme (adulte + moniteur) doit être égale au nombre total de guides.
+            ⚠️ La somme des 4 catégories doit être égale au nombre total de guides.
           </div>
         </div>
       </section>
 
       <!-- Total -->
       <div class="total-box" id="totalBox">
-        <div class="total-detail"><span id="ligneAdulte">Guides Adulte : 1 × 2 000</span><span id="montantAdulte">2 000 FCFA</span></div>
-        <div class="total-detail" id="ligneMoniteurWrap" style="display:none"><span id="ligneMoniteur">Guides Moniteur : 0 × 4 000</span><span id="montantMoniteur">0 FCFA</span></div>
+        <div class="total-detail" id="row_adulteFr" style="display:none"><span class="lbl"></span><span class="amt"></span></div>
+        <div class="total-detail" id="row_adulteEn" style="display:none"><span class="lbl"></span><span class="amt"></span></div>
+        <div class="total-detail" id="row_moniteurFr" style="display:none"><span class="lbl"></span><span class="amt"></span></div>
+        <div class="total-detail" id="row_moniteurEn" style="display:none"><span class="lbl"></span><span class="amt"></span></div>
         <hr />
         <div class="total-final">
           <span>Total à payer</span>
@@ -454,7 +486,7 @@
     </form>
 
     <footer>
-      <div class="verse">« Ta parole est une lampe à mes pieds, et une lumière sur mon sentier. »  Ps 119:105</div>
+      <div class="verse">« Ta parole est une lampe à mes pieds, et une lumière sur mon sentier. » Ps 119:105</div>
       Église Adventiste du Septième Jour · École du Sabbat
     </footer>
 
@@ -487,29 +519,44 @@
     // ============ STATE & DOM ============
     const $ = id => document.getElementById(id);
     const nbGuides = $('nbGuides');
+    const langueField = $('langueField');
     const singleTypeField = $('singleTypeField');
     const splitField = $('splitField');
-    const nbAdulte = $('nbAdulte');
-    const nbMoniteur = $('nbMoniteur');
     const splitError = $('splitError');
+    const splitRecap = $('splitRecap');
+    const splitSum = $('splitSum');
+    const splitTarget = $('splitTarget');
+
+    // 4 catégories : Adulte/Moniteur × FR/EN
+    const CATS = [
+      { key:'adulteFr',   type:'adulte',   typeLabel:'Adulte',   langue:'Français', prix:PRIX.adulte,   inputId:'nbAdulteFr',   rowId:'row_adulteFr',   emoji:'📖' },
+      { key:'adulteEn',   type:'adulte',   typeLabel:'Adulte',   langue:'Anglais',  prix:PRIX.adulte,   inputId:'nbAdulteEn',   rowId:'row_adulteEn',   emoji:'📖' },
+      { key:'moniteurFr', type:'moniteur', typeLabel:'Moniteur', langue:'Français', prix:PRIX.moniteur, inputId:'nbMoniteurFr', rowId:'row_moniteurFr', emoji:'🎓' },
+      { key:'moniteurEn', type:'moniteur', typeLabel:'Moniteur', langue:'Anglais',  prix:PRIX.moniteur, inputId:'nbMoniteurEn', rowId:'row_moniteurEn', emoji:'🎓' },
+    ];
 
     // ============ AFFICHAGE CONDITIONNEL ============
     function refreshGuideMode(){
       const total = parseInt(nbGuides.value) || 0;
       if(total <= 1){
+        // Mode simple : langue + type unique
+        langueField.style.display = '';
         singleTypeField.style.display = '';
         splitField.style.display = 'none';
         splitError.classList.remove('show');
       } else {
+        // Mode matrice : 4 catégories (type × langue)
+        langueField.style.display = 'none';
         singleTypeField.style.display = 'none';
         splitField.style.display = '';
-        // Re-équilibrer si besoin
-        let a = parseInt(nbAdulte.value)||0;
-        let m = parseInt(nbMoniteur.value)||0;
-        if (a + m !== total){
-          // par défaut, tout en adulte
-          nbAdulte.value = total;
-          nbMoniteur.value = 0;
+        // Re-équilibrer si la somme ne correspond pas
+        const current = CATS.reduce((s,c) => s + (parseInt($(c.inputId).value)||0), 0);
+        if (current !== total){
+          // Par défaut : tout en Adulte Français
+          $('nbAdulteFr').value = total;
+          $('nbAdulteEn').value = 0;
+          $('nbMoniteurFr').value = 0;
+          $('nbMoniteurEn').value = 0;
         }
       }
       computeTotal();
@@ -526,55 +573,76 @@
         computeTotal();
       });
     });
-    [nbAdulte, nbMoniteur].forEach(el => el.addEventListener('input', computeTotal));
+    CATS.forEach(c => $(c.inputId).addEventListener('input', computeTotal));
     document.querySelectorAll('input[name="typeUnique"]').forEach(r => r.addEventListener('change', computeTotal));
+    document.querySelectorAll('input[name="langue"]').forEach(r => r.addEventListener('change', computeTotal));
 
     // ============ CALCUL TOTAL ============
-    function getQty(){
+    // Retourne un objet { items: [{type, langue, qty, prix, sum}], totalQty, totalAmount, valid }
+    function getOrder(){
       const total = parseInt(nbGuides.value) || 0;
       if(total <= 1){
         const type = document.querySelector('input[name="typeUnique"]:checked').value;
+        const langue = document.querySelector('input[name="langue"]:checked').value;
+        const typeLabel = type === 'adulte' ? 'Adulte' : 'Moniteur';
+        const prix = type === 'adulte' ? PRIX.adulte : PRIX.moniteur;
         return {
-          adulte: type === 'adulte' ? 1 : 0,
-          moniteur: type === 'moniteur' ? 1 : 0,
-          total: 1,
-          valid: true
+          items: [{ type, typeLabel, langue, qty:1, prix, sum:prix }],
+          totalQty: 1,
+          totalAmount: prix,
+          valid: true,
         };
       }
-      const a = parseInt(nbAdulte.value) || 0;
-      const m = parseInt(nbMoniteur.value) || 0;
-      return { adulte: a, moniteur: m, total, valid: (a + m === total && total > 0) };
+      const items = CATS.map(c => {
+        const qty = parseInt($(c.inputId).value) || 0;
+        return { ...c, qty, sum: qty * c.prix };
+      }).filter(i => i.qty > 0);
+      const totalQty = items.reduce((s,i) => s + i.qty, 0);
+      const totalAmount = items.reduce((s,i) => s + i.sum, 0);
+      return { items, totalQty, totalAmount, valid: (totalQty === total && totalQty > 0) };
     }
 
     function computeTotal(){
-      const q = getQty();
-      const sumAdulte = q.adulte * PRIX.adulte;
-      const sumMoniteur = q.moniteur * PRIX.moniteur;
-      const total = sumAdulte + sumMoniteur;
+      const o = getOrder();
+      const targetTotal = parseInt(nbGuides.value) || 0;
 
-      // Ligne adulte
-      if(q.adulte > 0){
-        $('ligneAdulte').textContent = `Guides Adulte : ${q.adulte} × ${fmtNum(PRIX.adulte)}`;
-        $('montantAdulte').textContent = fmt(sumAdulte);
-        $('ligneAdulte').parentElement.style.display = 'flex';
+      // Affichage des lignes : on cache toutes puis on remplit celles avec qty>0
+      CATS.forEach(c => { $(c.rowId).style.display = 'none'; });
+
+      // Si mode simple (1 guide), l'item n'a pas de rowId mappé : on affiche dans la 1re ligne dispo
+      if(targetTotal <= 1 && o.items.length){
+        const it = o.items[0];
+        const rowKey = it.type === 'adulte'
+          ? (it.langue === 'Français' ? 'row_adulteFr' : 'row_adulteEn')
+          : (it.langue === 'Français' ? 'row_moniteurFr' : 'row_moniteurEn');
+        const row = $(rowKey);
+        row.style.display = 'flex';
+        row.querySelector('.lbl').textContent = `${it.typeLabel} ${it.langue} : ${it.qty} × ${fmtNum(it.prix)}`;
+        row.querySelector('.amt').textContent = fmt(it.sum);
       } else {
-        $('ligneAdulte').parentElement.style.display = 'none';
+        // Mode matrice
+        o.items.forEach(it => {
+          const row = $(it.rowId);
+          row.style.display = 'flex';
+          row.querySelector('.lbl').textContent = `${it.typeLabel} ${it.langue} : ${it.qty} × ${fmtNum(it.prix)}`;
+          row.querySelector('.amt').textContent = fmt(it.sum);
+        });
       }
 
-      // Ligne moniteur
-      if(q.moniteur > 0){
-        $('ligneMoniteur').textContent = `Guides Moniteur : ${q.moniteur} × ${fmtNum(PRIX.moniteur)}`;
-        $('montantMoniteur').textContent = fmt(sumMoniteur);
-        $('ligneMoniteurWrap').style.display = 'flex';
-      } else {
-        $('ligneMoniteurWrap').style.display = 'none';
-      }
+      $('totalAmount').textContent = fmt(o.totalAmount);
 
-      $('totalAmount').textContent = fmt(total);
-
-      // Erreur répartition
-      if(parseInt(nbGuides.value) > 1 && !q.valid){
-        splitError.classList.add('show');
+      // Récap répartition + erreur
+      if(targetTotal > 1){
+        splitSum.textContent = o.totalQty;
+        splitTarget.textContent = targetTotal;
+        splitRecap.classList.remove('match','mismatch');
+        if(o.valid){
+          splitRecap.classList.add('match');
+          splitError.classList.remove('show');
+        } else {
+          splitRecap.classList.add('mismatch');
+          splitError.classList.add('show');
+        }
       } else {
         splitError.classList.remove('show');
       }
@@ -608,36 +676,37 @@
       const nom = $('nomComplet').value.trim();
       if(!nom){ alert('Veuillez renseigner votre nom et prénom.'); $('nomComplet').focus(); return; }
 
-      const q = getQty();
-      if(parseInt(nbGuides.value) > 1 && !q.valid){
-        alert('La répartition Adulte + Moniteur doit être égale au nombre total de guides (' + nbGuides.value + ').');
+      const targetTotal = parseInt(nbGuides.value) || 0;
+      const o = getOrder();
+
+      if(targetTotal > 1 && !o.valid){
+        alert('La somme des 4 catégories (Adulte FR + Adulte EN + Moniteur FR + Moniteur EN) doit être égale au nombre total de guides (' + targetTotal + ').');
         return;
       }
-      if(q.total === 0){
+      if(o.totalQty === 0){
         alert('Le nombre de guides doit être supérieur à zéro.');
         return;
       }
 
-      const langue = document.querySelector('input[name="langue"]:checked').value;
       const paiement = document.querySelector('input[name="paiement"]:checked').value;
-      const sumA = q.adulte * PRIX.adulte;
-      const sumM = q.moniteur * PRIX.moniteur;
-      const total = sumA + sumM;
 
       // ===== Message formaté =====
       let msg = '';
       msg += '🌟 *NOUVELLE COMMANDE GUIDE EDS*\n';
       msg += '━━━━━━━━━━━━━━━━━━\n\n';
       msg += '📌 *N° Commande* : ' + numCommande + '\n';
+      msg += '📅 *Trimestre* : 2ᵉ Trimestre 2026\n';
       msg += '👤 *Nom & Prénom* : ' + nom + '\n\n';
 
       msg += '📖 *DÉTAIL COMMANDE*\n';
-      if(q.adulte > 0)   msg += '• Guides Adulte : ' + q.adulte + ' × ' + fmtNum(PRIX.adulte) + ' = ' + fmt(sumA) + '\n';
-      if(q.moniteur > 0) msg += '• Guides Moniteur : ' + q.moniteur + ' × ' + fmtNum(PRIX.moniteur) + ' = ' + fmt(sumM) + '\n';
-      msg += '• Langue : ' + langue + '\n';
-      msg += '• Total guides : ' + q.total + '\n\n';
+      o.items.forEach(it => {
+        const ico = it.type === 'adulte' ? '📖' : '🎓';
+        const flag = it.langue === 'Français' ? '🇫🇷' : '🇬🇧';
+        msg += '• ' + ico + ' ' + it.typeLabel + ' ' + flag + ' ' + it.langue + ' : ' + it.qty + ' × ' + fmtNum(it.prix) + ' = ' + fmt(it.sum) + '\n';
+      });
+      msg += '• Total guides : ' + o.totalQty + '\n\n';
 
-      msg += '💰 *TOTAL À PAYER : ' + fmt(total) + '*\n\n';
+      msg += '💰 *TOTAL À PAYER : ' + fmt(o.totalAmount) + '*\n\n';
 
       msg += '💳 *Mode de paiement* : ' + paiement + '\n';
       if(paiement === 'Orange Money'){
